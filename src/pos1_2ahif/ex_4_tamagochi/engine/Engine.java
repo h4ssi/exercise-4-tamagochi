@@ -19,28 +19,33 @@ public class Engine {
     private static final IFn frameFromString = Clojure.var("h4ssi.cacacanvas", "frame-from-strings");
 
     public Engine() {
-        JFrame frame = new JFrame("Tamagochi");
-
-        frame.setSize(200, 200);
-        frame.setResizable(false);
-
-        frame.addWindowListener(new WindowAdapter() {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
-            public void windowClosing(WindowEvent e) {
-                System.out.println("closing...");
-            }
+            public void run() {
+                JFrame frame = new JFrame("Tamagochi");
 
-            @Override
-            public void windowClosed(WindowEvent e) {
-                System.out.println("closed...");
+                frame.setSize(200, 200);
+                frame.setResizable(false);
+
+                frame.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        System.out.println("closing...");
+                    }
+
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        System.out.println("closed...");
+                    }
+                });
+
+                frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+                frame.add(createCacaCanvas(), BorderLayout.CENTER);
+
+                frame.setVisible(true);
             }
         });
-
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-        frame.add(createCacaCanvas(), BorderLayout.CENTER);
-
-        frame.setVisible(true);
     }
 
     public static JComponent createCacaCanvas() {
