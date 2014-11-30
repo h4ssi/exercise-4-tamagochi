@@ -13,6 +13,7 @@ public class MyTamagochiLogic extends TamagochiLogicAdapter {
     private Graphics graphics;
 
     private int bubblesBlubbed = 0;
+    private int doubleBlubb = 0;
 
     public MyTamagochiLogic(Engine engine) {
         this.engine = engine;
@@ -25,8 +26,7 @@ public class MyTamagochiLogic extends TamagochiLogicAdapter {
         engine.render(graphics.getDefaultFrame());
     }
 
-    @Override
-    public void update(Calendar now) {
+    private void blubb(Calendar now) {
         engine.log(engine.createLogFrame().fromSegments(
                 new FrameSegment(
                         "blubb!",
@@ -34,7 +34,9 @@ public class MyTamagochiLogic extends TamagochiLogicAdapter {
                         " ")));
 
         bubblesBlubbed++;
+    }
 
+    private void drawStatus() {
         engine.status(engine.createStatusFrame().fromSegments(
                 // status window is 16 chars wide
                 // we print a space " " left and right
@@ -54,5 +56,48 @@ public class MyTamagochiLogic extends TamagochiLogicAdapter {
                         null
                 )
         ));
+    }
+
+    @Override
+    public void update(Calendar now) {
+
+        if (doubleBlubb > 0) {
+            doubleBlubb--;
+
+            blubb(now);
+            blubb(now);
+        } else {
+            blubb(now);
+        }
+
+        drawStatus();
+    }
+
+    @Override
+    public void command(String command) {
+        if ("blubb".equals(command)) {
+            for (int i = 0; i < 10; i++) {
+                engine.log(
+                        engine.createLogFrame().fromSegments(
+                                new FrameSegment(
+                                        "BLUBB!!",
+                                        "Ww",
+                                        null)));
+                bubblesBlubbed++;
+            }
+            drawStatus();
+        } else if ("doubleblubb".equals(command)) {
+            doubleBlubb += 5;
+        } else {
+            engine.log(
+                    engine.createLogFrame().fromSegments(
+                            new FrameSegment(
+                                    "Blubb????",
+                                    "ABC",
+                                    null
+                            )
+                    )
+            );
+        }
     }
 }

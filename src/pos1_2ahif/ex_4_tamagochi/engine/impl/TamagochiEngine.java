@@ -5,7 +5,6 @@ import pos1_2ahif.ex_4_tamagochi.engine.api.FrameFactory;
 import pos1_2ahif.ex_4_tamagochi.engine.api.TamagochiLogic;
 import pos1_2ahif.ex_4_tamagochi.engine.exception.InitializationException;
 
-import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -93,7 +92,10 @@ public class TamagochiEngine implements Engine {
                                         return;
                                     }
 
-                                    System.out.println(command);
+                                    TamagochiLogic l = logic;
+                                    if (l != null) {
+                                        l.command(command);
+                                    }
                                     CacaCanvas.currentText.invoke(textField, "");
                                 }
                             });
@@ -140,7 +142,7 @@ public class TamagochiEngine implements Engine {
     }
 
     private void unloadLogic() {
-        if(this.logic != null) {
+        if (this.logic != null) {
             logic.exit();
             timer.setInitialDelay(10000);
             timer.restart();

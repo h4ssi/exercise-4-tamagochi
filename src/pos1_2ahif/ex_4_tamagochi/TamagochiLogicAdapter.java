@@ -22,4 +22,9 @@ public class TamagochiLogicAdapter implements TamagochiLogic {
     public void exit() {
 
     }
+
+    @Override
+    public void command(String command) {
+
+    }
 }

@@ -10,5 +10,7 @@ public interface TamagochiLogic {
 
     void update(Calendar now);
 
+    void command(String command);
+
     void exit();
 }
