@@ -3,7 +3,6 @@ package pos1_2ahif.ex_4_tamagochi.engine;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -43,8 +42,8 @@ public class LogPanel extends JScrollPane {
         return preferredSize;
     }
 
-    public void add(String msg) {
-        logFrame = CacaCanvas.appendStringsToFrame.invoke(logFrame, msg, "", "");
+    public void add(Frame frameToAppend) {
+        logFrame = frameToAppend.nextFrame(logFrame);
         CacaCanvas.renderCacaFrame.invoke(logCanvas, logFrame);
         logCanvas.scrollRectToVisible(new Rectangle(0, logCanvas.getPreferredSize().height, 0, 0));
     }

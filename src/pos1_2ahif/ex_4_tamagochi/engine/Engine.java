@@ -2,13 +2,16 @@ package pos1_2ahif.ex_4_tamagochi.engine;
 
 import pos1_2ahif.ex_4_tamagochi.engine.exception.InitializationException;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.renderable.RenderableImageProducer;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 
@@ -75,7 +78,7 @@ public class Engine {
                                 public void actionPerformed(ActionEvent actionEvent) {
                                     // on enter:
                                     String command = (String) CacaCanvas.currentText.invoke(textField);
-                                    if(command == null || command.isEmpty()) {
+                                    if (command == null || command.isEmpty()) {
                                         return;
                                     }
 
@@ -99,37 +102,31 @@ public class Engine {
         }
     }
 
-    public void render(final String symbols, final String foregroundColors, final String backgroundColors) {
+    public void render(final Frame graphicsFrame) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 CacaCanvas.renderCacaFrame.invoke(
                         graphics,
-                        CacaCanvas.frameFromString.invoke(
-                                graphicsWidth, graphicsHeight,
-                                symbols, foregroundColors, backgroundColors,
-                                ' ', foregroundColorCode, backgroundColorCode));
+                        graphicsFrame.nextFrame(null));
                 graphics.repaint();
             }
         });
     }
 
-    public void status(final String symbols, final String foregroundColors, final String backgroundColors) {
+    public void status(final Frame statusFrame) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 CacaCanvas.renderCacaFrame.invoke(
                         status,
-                        CacaCanvas.frameFromString.invoke(
-                                statusWidth, height,
-                                symbols, foregroundColors, backgroundColors,
-                                ' ', foregroundColorCode, backgroundColorCode));
+                        statusFrame.nextFrame(null));
                 status.repaint();
             }
         });
     }
 
-    public void log(final String message) {
+    public void log(final Frame message) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -172,5 +169,17 @@ public class Engine {
         this.backgroundColorCode = backgroundColorCode;
 
         frame.setBackground(backgroundColor);
+    }
+
+    public FrameFactory createGraphicsFrame() {
+        return new IndependentFrameFactory(graphicsWidth, graphicsHeight, foregroundColorCode, backgroundColorCode);
+    }
+
+    public FrameFactory createStatusFrame() {
+        return new IndependentFrameFactory(statusWidth, height, foregroundColorCode, backgroundColorCode);
+    }
+
+    public FrameFactory createLogFrame() {
+        return new AppendingFrameFactory(logWidth, height, foregroundColorCode, backgroundColorCode);
     }
 }

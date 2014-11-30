@@ -3,7 +3,7 @@ package pos1_2ahif.ex_4_tamagochi.engine;
 import clojure.java.api.Clojure;
 import clojure.lang.IFn;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 import java.awt.event.ActionListener;
 
 /**
@@ -20,10 +20,13 @@ public final class CacaCanvas {
     }
 
     public static final IFn frameFromString = Clojure.var(CACA, "frame-from-strings");
+    public static final IFn cacaSegment = Clojure.var(CACA, "->CacaSegment");
+    public static final IFn frameFromSegments = Clojure.var(CACA, "frame-from-segments");
     public static final IFn cacaCanvas = Clojure.var(CACA, "cacacanvas");
     public static final IFn getColorForChar = Clojure.var(CACA, "char->Color");
     public static final IFn renderCacaFrame = Clojure.var(CACA, "render-caca-frame");
     public static final IFn appendStringsToFrame = Clojure.var(CACA, "append-strings-to-frame");
+    public static final IFn appendSegmentsToFrame = Clojure.var(CACA, "append-segments-to-frame");
     public static final IFn cacaTextField = Clojure.var(CACA, "caca-text-field");
     public static final IFn currentText = Clojure.var(CACA, "current-text");
 

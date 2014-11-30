@@ -1,6 +1,7 @@
 package pos1_2ahif.ex_4_tamagochi;
 
 import pos1_2ahif.ex_4_tamagochi.engine.Engine;
+import pos1_2ahif.ex_4_tamagochi.engine.FrameSegment;
 import pos1_2ahif.ex_4_tamagochi.engine.exception.InitializationException;
 
 /**
@@ -16,36 +17,41 @@ public class Main {
                 backgroundColorCode);
 
         engine.render(
-                // symbols
-                "                " +
-                "   draw your    " +
-                "   tamagochi    " +
-                "      here      " +
-                "                " +
-                "   eg a fish:   " +
-                "~~°°~~~~~~~~~~~~" +
-                "~~°<*)))u))>{~~~",
-                // foreground colors
-                "                " +
-                "eeeeeeeeeeeeeeee" +
-                "eeeeeeeeeeeeeeee" +
-                "eeeeeeeeeeeeeeee" +
-                "                " +
-                "eeeeeeeeeeeeeeee" +
-                "OpOpoOpOpoOOpoOp" +
-                "popAaAAAaAAaaoOp",
-                // background colors
-                "7777777777777777" +
-                "7777777777777777" +
-                "7777777777777777" +
-                "7777777777777777" +
-                "7777777777777777" +
-                "7777777777777777" +
-                "oooooooooooooooo" +
-                "oooooooooooooooo");
+                engine.createGraphicsFrame().fromStrings(
+                        // symbols
+                        "                " +
+                                "   draw your    " +
+                                "   tamagochi    " +
+                                "      here      " +
+                                "                " +
+                                "   eg a fish:   " +
+                                "~~°°~~~~~~~~~~~~" +
+                                "~~°<*)))u))>{~~~",
+                        // foreground colors
+                        "                " +
+                                "eeeeeeeeeeeeeeee" +
+                                "eeeeeeeeeeeeeeee" +
+                                "eeeeeeeeeeeeeeee" +
+                                "                " +
+                                "eeeeeeeeeeeeeeee" +
+                                "OpOpoOpOpoOOpoOp" +
+                                "popAaAAAaAAaaoOp",
+                        // background colors
+                        "7777777777777777" +
+                                "7777777777777777" +
+                                "7777777777777777" +
+                                "7777777777777777" +
+                                "7777777777777777" +
+                                "7777777777777777" +
+                                "oooooooooooooooo" +
+                                "oooooooooooooooo"));
 
-            engine.status("asdf", "    ", "    ");
+        engine.status(
+                engine.createStatusFrame().fromSegments(new FrameSegment("asdf")));
 
-            engine.log("hallo");
+        engine.log(
+                engine.createLogFrame().fromSegments(new FrameSegment("Log entry #1")));
+        engine.log(
+                engine.createLogFrame().fromSegments(new FrameSegment("Log entry #2")));
     }
 }
