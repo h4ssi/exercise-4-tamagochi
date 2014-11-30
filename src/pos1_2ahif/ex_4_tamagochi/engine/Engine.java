@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.renderable.RenderableImageProducer;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 
@@ -16,12 +17,17 @@ import java.text.MessageFormat;
  */
 public class Engine {
     private JFrame frame;
-    private JComponent view;
+    private JComponent graphics;
+    private JComponent status;
+    private LogPanel logEntries;
     private JComponent textField;
     private char foregroundColorCode;
     private char backgroundColorCode;
-    int width = 16;
-    int height = 8;
+    int graphicsWidth = 16;
+    int graphicsHeight = 8;
+    int statusWidth = 16;
+    int logWidth = 80 - graphicsWidth - statusWidth;
+    int height = 20;
 
     public Engine(final char foregroundColorCode, final char backgroundColorCode) throws InitializationException {
         try {
@@ -47,11 +53,15 @@ public class Engine {
 
                     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-                    view = createCacaCanvas(width, height);
-                    frame.add(view, BorderLayout.LINE_START);
-                    LogPanel p = new LogPanel(80 - width, height, foregroundColorCode, backgroundColorCode);
+                    graphics = createCacaCanvas(graphicsWidth, graphicsHeight);
+                    frame.add(graphics, BorderLayout.LINE_START);
 
-                    frame.add(p, BorderLayout.CENTER);
+                    status = createCacaCanvas(statusWidth, height);
+                    frame.add(status, BorderLayout.CENTER);
+
+                    logEntries = new LogPanel(logWidth, height, foregroundColorCode, backgroundColorCode);
+
+                    frame.add(logEntries, BorderLayout.LINE_END);
 
                     textField = CacaCanvas.textField(80, foregroundColorCode, backgroundColorCode,
                             new ActionListener() {
@@ -94,12 +104,36 @@ public class Engine {
             @Override
             public void run() {
                 CacaCanvas.renderCacaFrame.invoke(
-                        view,
+                        graphics,
                         CacaCanvas.frameFromString.invoke(
-                                width, height,
+                                graphicsWidth, graphicsHeight,
                                 symbols, foregroundColors, backgroundColors,
                                 ' ', foregroundColorCode, backgroundColorCode));
-                view.repaint();
+                graphics.repaint();
+            }
+        });
+    }
+
+    public void status(final String symbols, final String foregroundColors, final String backgroundColors) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                CacaCanvas.renderCacaFrame.invoke(
+                        status,
+                        CacaCanvas.frameFromString.invoke(
+                                statusWidth, height,
+                                symbols, foregroundColors, backgroundColors,
+                                ' ', foregroundColorCode, backgroundColorCode));
+                status.repaint();
+            }
+        });
+    }
+
+    public void log(final String message) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                logEntries.add(message);
             }
         });
     }

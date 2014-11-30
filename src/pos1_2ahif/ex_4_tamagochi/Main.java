@@ -44,5 +44,8 @@ public class Main {
                 "oooooooooooooooo" +
                 "oooooooooooooooo");
 
+            engine.status("asdf", "    ", "    ");
+
+            engine.log("hallo");
     }
 }

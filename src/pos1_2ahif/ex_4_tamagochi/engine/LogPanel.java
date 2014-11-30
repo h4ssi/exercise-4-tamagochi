@@ -22,7 +22,7 @@ public class LogPanel extends JScrollPane {
     }
 
     private LogPanel(JComponent canvas, int width, int height, char foreGroundColorCode, char backGroundColorCode) {
-        super(canvas, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
+        super(canvas, VERTICAL_SCROLLBAR_NEVER, HORIZONTAL_SCROLLBAR_NEVER);
 
         this.getViewport().setBackground((Color) CacaCanvas.getColorForChar.invoke(backGroundColorCode));
 
