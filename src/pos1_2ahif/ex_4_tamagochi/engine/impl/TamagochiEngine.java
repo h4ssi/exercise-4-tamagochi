@@ -9,6 +9,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
@@ -60,7 +61,7 @@ public class TamagochiEngine implements Engine {
     private TamagochiLogic logic = null;
     private Timer timer = new Timer(0, null);
 
-    private String name = "";
+    private String name = null;
     private Calendar birthday = Calendar.getInstance();
 
     public TamagochiEngine(final char foregroundColorCode, final char backgroundColorCode) throws InitializationException {
@@ -299,15 +300,33 @@ public class TamagochiEngine implements Engine {
 
                 name = br.readLine();
                 String bday = br.readLine();
+                String last = br.readLine();
 
                 birthday = Calendar.getInstance();
-
                 birthday.setTime(TIME_FORMAT.parse(bday));
+
+                final Calendar lastSimulation = Calendar.getInstance();
+                lastSimulation.setTime(TIME_FORMAT.parse(last));
+
                 SwingUtilities.invokeAndWait(new Runnable() {
                     @Override
                     public void run() {
+                        layout.show(frame.getContentPane(), "loading");
                         logic.load(name, birthday, fis);
-                        startGameLoop();
+
+                        (new SwingWorker<Void, Void>() {
+                            @Override
+                            protected Void doInBackground() throws Exception {
+                                logic.offlineUpdate(lastSimulation, Calendar.getInstance());
+                                return null;
+                            }
+
+                            @Override
+                            protected void done() {
+                                startGameLoop();
+                                super.done();
+                            }
+                        }).execute();
                     }
                 });
             } finally {
@@ -334,25 +353,29 @@ public class TamagochiEngine implements Engine {
 
     private void unloadLogic() {
         if (this.logic != null) {
-            try {
-                File file = getFile(this.logic);
-                FileOutputStream fos = new FileOutputStream(file);
+            if (this.name != null) {
                 try {
-                    System.out.println("saving to file " + file.getAbsolutePath() + "...");
-                    PrintWriter pw = new PrintWriter(new OutputStreamWriter(fos, "UTF-8"), true);
-                    pw.println(name);
-                    pw.println(TIME_FORMAT.format(birthday.getTime()));
+                    File file = getFile(this.logic);
+                    FileOutputStream fos = new FileOutputStream(file);
+                    try {
+                        System.out.println("saving to file " + file.getAbsolutePath() + "...");
+                        PrintWriter pw = new PrintWriter(new OutputStreamWriter(fos, "UTF-8"), true);
+                        pw.println(name);
+                        pw.println(TIME_FORMAT.format(birthday.getTime()));
+                        pw.println(TIME_FORMAT.format(Calendar.getInstance().getTime()));
 
-                    logic.store(fos);
-                } finally {
-                    fos.close();
+                        logic.store(fos);
+                    } finally {
+                        fos.close();
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+                this.name = null;
             }
 
             logic.exit();
@@ -408,12 +431,12 @@ public class TamagochiEngine implements Engine {
 
         unloadLogic();
 
-        if(l != null) {
+        if (l != null) {
             File f = getFile(l);
             System.out.println("deleting " + f.getAbsolutePath() + "...");
 
             boolean success = f.delete();
-            if(!success) {
+            if (!success) {
                 f.deleteOnExit();
             }
         }

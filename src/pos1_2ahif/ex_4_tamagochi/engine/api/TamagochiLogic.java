@@ -10,6 +10,8 @@ import java.util.Calendar;
 public interface TamagochiLogic {
     void init();
 
+    void exit();
+
     void update(Calendar now);
 
     void command(String command);
@@ -18,5 +20,5 @@ public interface TamagochiLogic {
 
     void store(FileOutputStream fos);
 
-    void exit();
+    void offlineUpdate(Calendar from, Calendar to);
 }

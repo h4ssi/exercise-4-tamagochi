@@ -16,13 +16,22 @@ public class TamagochiLogicAdapter implements TamagochiLogic {
     }
 
     @Override
+    public void exit() {
+
+    }
+
+    @Override
     public void update(Calendar now) {
 
     }
 
     @Override
-    public void exit() {
-
+    public void offlineUpdate(Calendar from, Calendar to) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
