@@ -2,6 +2,7 @@ package pos1_2ahif.ex_4_tamagochi;
 
 import pos1_2ahif.ex_4_tamagochi.engine.Engine;
 import pos1_2ahif.ex_4_tamagochi.engine.FrameSegment;
+import pos1_2ahif.ex_4_tamagochi.engine.TamagochiEngine;
 import pos1_2ahif.ex_4_tamagochi.engine.exception.InitializationException;
 
 /**
@@ -12,7 +13,7 @@ public class Main {
         char foregroundColorCode = 'e';
         char backgroundColorCode = '7';
 
-        Engine engine = new Engine(
+        Engine engine = new TamagochiEngine(
                 foregroundColorCode,
                 backgroundColorCode);
 
