@@ -1,7 +1,5 @@
 package pos1_2ahif.ex_4_tamagochi.engine;
 
-import clojure.java.api.Clojure;
-import clojure.lang.IFn;
 import pos1_2ahif.ex_4_tamagochi.engine.exception.InitializationException;
 
 import javax.swing.*;
@@ -15,17 +13,6 @@ import java.text.MessageFormat;
  * Created by Florian on 18.11.2014.
  */
 public class Engine {
-    private static final String CACA = "h4ssi.cacacanvas";
-
-    static {
-        Clojure.var("clojure.core", "require").invoke(Clojure.read(CACA));
-    }
-
-    private static final IFn frameFromString = Clojure.var(CACA, "frame-from-strings");
-    private static final IFn cacaCanvas = Clojure.var(CACA, "cacacanvas");
-    private static final IFn getColorForChar = Clojure.var(CACA, "char->Color");
-    private static final IFn renderCacaFrame = Clojure.var(CACA, "render-caca-frame");
-
     private JFrame frame;
     private JComponent view;
     private char foregroundColorCode;
@@ -58,7 +45,12 @@ public class Engine {
                     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
                     view = createCacaCanvas(width, height);
-                    frame.add(view, BorderLayout.CENTER);
+                    frame.add(view, BorderLayout.LINE_START);
+                    LogPanel p = new LogPanel(80 - width, height);
+                    for (int i = 0; i < 10; i++) {
+                        p.add("test");
+                    }
+                    frame.add(p, BorderLayout.CENTER);
 
                     frame.pack();
                     frame.setResizable(false);
@@ -77,9 +69,9 @@ public class Engine {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                renderCacaFrame.invoke(
+                CacaCanvas.renderCacaFrame.invoke(
                         view,
-                        frameFromString.invoke(
+                        CacaCanvas.frameFromString.invoke(
                                 width, height,
                                 symbols, foregroundColors, backgroundColors,
                                 ' ', foregroundColorCode, backgroundColorCode));
@@ -89,15 +81,11 @@ public class Engine {
     }
 
     private JComponent createCacaCanvas(int width, int height) {
-        return (JComponent) cacaCanvas.invoke(
-                frameFromString.invoke(
-                        width, height,
-                        "", "", "",
-                        ' ', foregroundColorCode, backgroundColorCode));
+        return CacaCanvas.emptyCanvas(width, height, foregroundColorCode, backgroundColorCode);
     }
 
     private Color checkValidColorCode(char colorCode) {
-        Color color = (Color) getColorForChar.invoke(colorCode);
+        Color color = (Color) CacaCanvas.getColorForChar.invoke(colorCode);
 
         if (color == null) {
             throw new IllegalArgumentException(MessageFormat.format("''{0}'' is not a valid color code!", colorCode));
