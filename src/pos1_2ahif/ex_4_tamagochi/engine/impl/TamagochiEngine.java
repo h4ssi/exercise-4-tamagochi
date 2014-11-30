@@ -402,6 +402,30 @@ public class TamagochiEngine implements Engine {
         });
     }
 
+    @Override
+    public synchronized void gameOver() {
+        TamagochiLogic l = this.logic;
+
+        unloadLogic();
+
+        if(l != null) {
+            File f = getFile(l);
+            System.out.println("deleting " + f.getAbsolutePath() + "...");
+
+            boolean success = f.delete();
+            if(!success) {
+                f.deleteOnExit();
+            }
+        }
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                layout.show(frame.getContentPane(), "gameover");
+            }
+        });
+    }
+
     private JComponent createCacaCanvas(int width, int height) {
         return CacaCanvas.emptyCanvas(width, height, foregroundColorCode, backgroundColorCode);
     }

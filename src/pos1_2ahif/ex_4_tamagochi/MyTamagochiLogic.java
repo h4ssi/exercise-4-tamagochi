@@ -88,6 +88,8 @@ public class MyTamagochiLogic extends TamagochiLogicAdapter {
             drawStatus();
         } else if ("doubleblubb".equals(command)) {
             doubleBlubb += 5;
+        } else if ("rip".equals(command)) {
+            engine.gameOver();
         } else {
             engine.log(
                     engine.createLogFrame().fromSegments(

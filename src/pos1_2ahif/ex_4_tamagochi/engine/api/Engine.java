@@ -14,6 +14,8 @@ public interface Engine {
 
     void log(Frame message);
 
+    void gameOver();
+
     FrameFactory createGraphicsFrame();
 
     FrameFactory createStatusFrame();
