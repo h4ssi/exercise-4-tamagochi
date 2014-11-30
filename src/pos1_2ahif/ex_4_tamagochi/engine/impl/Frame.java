@@ -1,4 +1,4 @@
-package pos1_2ahif.ex_4_tamagochi.engine;
+package pos1_2ahif.ex_4_tamagochi.engine.impl;
 
 /**
  * Created by florian on 30.11.14.

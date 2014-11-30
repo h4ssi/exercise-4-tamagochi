@@ -1,4 +1,4 @@
-package pos1_2ahif.ex_4_tamagochi.engine;
+package pos1_2ahif.ex_4_tamagochi.engine.impl;
 
 import clojure.java.api.Clojure;
 import clojure.lang.IFn;

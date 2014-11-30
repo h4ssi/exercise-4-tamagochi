@@ -1,4 +1,7 @@
-package pos1_2ahif.ex_4_tamagochi.engine;
+package pos1_2ahif.ex_4_tamagochi.engine.impl;
+
+import pos1_2ahif.ex_4_tamagochi.engine.api.FrameFactory;
+import pos1_2ahif.ex_4_tamagochi.engine.api.FrameSegment;
 
 import java.util.LinkedList;
 import java.util.List;

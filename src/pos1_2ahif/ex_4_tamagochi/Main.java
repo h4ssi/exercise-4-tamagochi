@@ -1,8 +1,8 @@
 package pos1_2ahif.ex_4_tamagochi;
 
-import pos1_2ahif.ex_4_tamagochi.engine.Engine;
-import pos1_2ahif.ex_4_tamagochi.engine.FrameSegment;
-import pos1_2ahif.ex_4_tamagochi.engine.TamagochiEngine;
+import pos1_2ahif.ex_4_tamagochi.engine.api.Engine;
+import pos1_2ahif.ex_4_tamagochi.engine.api.FrameSegment;
+import pos1_2ahif.ex_4_tamagochi.engine.impl.TamagochiEngine;
 import pos1_2ahif.ex_4_tamagochi.engine.exception.InitializationException;
 
 /**

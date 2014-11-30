@@ -1,5 +1,7 @@
-package pos1_2ahif.ex_4_tamagochi.engine;
+package pos1_2ahif.ex_4_tamagochi.engine.impl;
 
+import pos1_2ahif.ex_4_tamagochi.engine.api.Engine;
+import pos1_2ahif.ex_4_tamagochi.engine.api.FrameFactory;
 import pos1_2ahif.ex_4_tamagochi.engine.exception.InitializationException;
 
 import javax.swing.JComponent;
