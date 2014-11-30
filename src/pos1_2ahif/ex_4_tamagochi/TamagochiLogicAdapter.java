@@ -2,6 +2,8 @@ package pos1_2ahif.ex_4_tamagochi;
 
 import pos1_2ahif.ex_4_tamagochi.engine.api.TamagochiLogic;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.Calendar;
 
 /**
@@ -25,6 +27,16 @@ public class TamagochiLogicAdapter implements TamagochiLogic {
 
     @Override
     public void command(String command) {
+
+    }
+
+    @Override
+    public void load(String name, Calendar birthday, FileInputStream fis) {
+
+    }
+
+    @Override
+    public void store(FileOutputStream fos) {
 
     }
 }

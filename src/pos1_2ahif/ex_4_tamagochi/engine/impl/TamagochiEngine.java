@@ -7,17 +7,33 @@ import pos1_2ahif.ex_4_tamagochi.engine.exception.InitializationException;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 
 /**
@@ -29,6 +45,8 @@ public class TamagochiEngine implements Engine {
     private JComponent status;
     private LogPanel logEntries;
     private JComponent textField;
+    private JComponent newGameTextField;
+    private CardLayout layout;
 
     private char foregroundColorCode;
     private char backgroundColorCode;
@@ -42,6 +60,9 @@ public class TamagochiEngine implements Engine {
     private TamagochiLogic logic = null;
     private Timer timer = new Timer(0, null);
 
+    private String name = "";
+    private Calendar birthday = Calendar.getInstance();
+
     public TamagochiEngine(final char foregroundColorCode, final char backgroundColorCode) throws InitializationException {
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
@@ -49,32 +70,36 @@ public class TamagochiEngine implements Engine {
                 public void run() {
                     frame = new JFrame("Tamagochi");
 
-                    setForegroundColorCode(foregroundColorCode);
-                    setBackgroundColorCode(backgroundColorCode);
+                    Color fg = checkValidColorCode(foregroundColorCode);
+                    Color bg = checkValidColorCode(backgroundColorCode);
+
+                    TamagochiEngine.this.foregroundColorCode = foregroundColorCode;
+                    TamagochiEngine.this.backgroundColorCode = backgroundColorCode;
+
+                    frame.setForeground(fg);
+                    frame.setBackground(bg);
 
                     frame.addWindowListener(new WindowAdapter() {
                         @Override
                         public void windowClosing(WindowEvent e) {
                             onExit();
                         }
-
-                        @Override
-                        public void windowClosed(WindowEvent e) {
-                            System.out.println("closed...");
-                        }
                     });
 
                     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
+                    JPanel mainPanel = new JPanel(new BorderLayout());
+                    mainPanel.setForeground(fg);
+                    mainPanel.setBackground(bg);
+
                     graphics = createCacaCanvas(graphicsWidth, graphicsHeight);
-                    frame.add(graphics, BorderLayout.LINE_START);
+                    mainPanel.add(graphics, BorderLayout.LINE_START);
 
                     status = createCacaCanvas(statusWidth, height);
-                    frame.add(status, BorderLayout.CENTER);
+                    mainPanel.add(status, BorderLayout.CENTER);
 
                     logEntries = new LogPanel(logWidth, height, foregroundColorCode, backgroundColorCode);
-
-                    frame.add(logEntries, BorderLayout.LINE_END);
+                    mainPanel.add(logEntries, BorderLayout.LINE_END);
 
                     textField = CacaCanvas.textField(80, foregroundColorCode, backgroundColorCode,
                             new ActionListener() {
@@ -100,9 +125,97 @@ public class TamagochiEngine implements Engine {
                                 }
                             });
 
-                    frame.add(textField, BorderLayout.PAGE_END);
+                    mainPanel.add(textField, BorderLayout.PAGE_END);
 
+                    JPanel gameOverPanel = new JPanel();
+                    gameOverPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+                    gameOverPanel.setBackground(bg);
+                    gameOverPanel.setForeground(fg);
+
+                    JComponent gameOverLabel = (JComponent)
+                            CacaCanvas.cacaCanvas.invoke(
+                                    CacaCanvas.frameFromSegments.invoke(
+                                            9,
+                                            Arrays.asList(
+                                                    CacaCanvas.cacaSegment.invoke(
+                                                            "GAME OVER",
+                                                            "" + foregroundColorCode,
+                                                            "" + backgroundColorCode))));
+                    gameOverPanel.add(gameOverLabel);
+
+                    JPanel newGamePanel = new JPanel();
+                    newGamePanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+                    newGamePanel.setBackground(bg);
+                    newGamePanel.setForeground(fg);
+
+                    String prompt = "Choose a name: ";
+                    JComponent newGameLabel = (JComponent)
+                            CacaCanvas.cacaCanvas.invoke(
+                                    CacaCanvas.frameFromSegments.invoke(
+                                            prompt.length(),
+                                            Arrays.asList(
+                                                    CacaCanvas.cacaSegment.invoke(
+                                                            prompt,
+                                                            "" + foregroundColorCode,
+                                                            "" + backgroundColorCode))));
+                    newGamePanel.add(newGameLabel);
+
+                    newGameTextField = (JComponent)
+                            CacaCanvas.textField(prompt.length(), foregroundColorCode, backgroundColorCode,
+                                    new ActionListener() {
+                                        @Override
+                                        public void actionPerformed(ActionEvent actionEvent) {
+
+                                        }
+                                    }, new ActionListener() {
+                                        @Override
+                                        public void actionPerformed(ActionEvent actionEvent) {
+                                            String name = (String) CacaCanvas.currentText.invoke(newGameTextField);
+                                            if (name == null) {
+                                                return;
+                                            }
+                                            name = name.trim();
+                                            if (name.isEmpty()) {
+                                                return;
+                                            }
+                                            TamagochiLogic l = logic;
+                                            if (l != null) {
+                                                TamagochiEngine.this.name = name;
+                                                TamagochiEngine.this.birthday = Calendar.getInstance();
+                                                layout.show(frame.getContentPane(), "loading");
+                                                l.load(TamagochiEngine.this.name, TamagochiEngine.this.birthday, null);
+                                                startGameLoop();
+                                            }
+                                        }
+                                    });
+                    newGamePanel.add(newGameTextField);
+
+                    JPanel loadingPanel = new JPanel();
+                    loadingPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+                    loadingPanel.setBackground(bg);
+                    loadingPanel.setForeground(fg);
+
+                    JComponent loadingLabel = (JComponent)
+                            CacaCanvas.cacaCanvas.invoke(
+                                    CacaCanvas.frameFromSegments.invoke(
+                                            10,
+                                            Arrays.asList(
+                                                    CacaCanvas.cacaSegment.invoke(
+                                                            "Loading...",
+                                                            "" + foregroundColorCode,
+                                                            "" + backgroundColorCode))));
+                    loadingPanel.add(loadingLabel);
+
+                    layout = new CardLayout();
+                    frame.getContentPane().setLayout(layout);
+                    frame.add(mainPanel, "main");
+                    frame.add(gameOverPanel, "gameover");
+                    frame.add(newGamePanel, "newgame");
+                    frame.add(loadingPanel, "loading");
+
+                    layout.show(frame.getContentPane(), "main");
                     frame.pack();
+                    layout.show(frame.getContentPane(), "loading");
                     frame.setResizable(false);
                 }
             });
@@ -117,11 +230,25 @@ public class TamagochiEngine implements Engine {
     public synchronized void start(final TamagochiLogic logic) {
         unloadLogic();
 
-        this.logic = logic;
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    frame.setVisible(true);
+                }
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
 
-        this.logic.init();
+        loadLogic(logic);
+    }
 
-        frame.setVisible(true);
+    private void startGameLoop() {
+        layout.show(frame.getContentPane(), "main");
+        textField.requestFocusInWindow();
 
         timer.setInitialDelay(0);
         timer.setDelay(1000);
@@ -141,8 +268,93 @@ public class TamagochiEngine implements Engine {
         unloadLogic();
     }
 
+    private static File getFile(TamagochiLogic logic) {
+        return new File("tamagochi." + logic.getClass().getSimpleName() + ".txt");
+    }
+
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+    private void loadLogic(final TamagochiLogic logic) {
+        this.logic = logic;
+
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    logic.init();
+                }
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            File file = getFile(logic);
+            final FileInputStream fis = new FileInputStream(file);
+            try {
+                System.out.println("loading from file " + file.getAbsolutePath() + "...");
+                BufferedReader br = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
+
+                name = br.readLine();
+                String bday = br.readLine();
+
+                birthday = Calendar.getInstance();
+
+                birthday.setTime(TIME_FORMAT.parse(bday));
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    @Override
+                    public void run() {
+                        logic.load(name, birthday, fis);
+                        startGameLoop();
+                    }
+                });
+            } finally {
+                fis.close();
+            }
+        } catch (FileNotFoundException e) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    layout.show(frame.getContentPane(), "newgame");
+                    newGameTextField.requestFocusInWindow();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void unloadLogic() {
         if (this.logic != null) {
+            try {
+                File file = getFile(this.logic);
+                FileOutputStream fos = new FileOutputStream(file);
+                try {
+                    System.out.println("saving to file " + file.getAbsolutePath() + "...");
+                    PrintWriter pw = new PrintWriter(new OutputStreamWriter(fos, "UTF-8"), true);
+                    pw.println(name);
+                    pw.println(TIME_FORMAT.format(birthday.getTime()));
+
+                    logic.store(fos);
+                } finally {
+                    fos.close();
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             logic.exit();
             timer.setInitialDelay(10000);
             timer.restart();
@@ -208,22 +420,8 @@ public class TamagochiEngine implements Engine {
         return foregroundColorCode;
     }
 
-    private final void setForegroundColorCode(char foregroundColorCode) {
-        Color foregroundColor = checkValidColorCode(foregroundColorCode);
-        this.foregroundColorCode = foregroundColorCode;
-
-        frame.setForeground(foregroundColor);
-    }
-
     private char getBackgroundColorCode() {
         return backgroundColorCode;
-    }
-
-    private final void setBackgroundColorCode(char backgroundColorCode) {
-        Color backgroundColor = checkValidColorCode(backgroundColorCode);
-        this.backgroundColorCode = backgroundColorCode;
-
-        frame.setBackground(backgroundColor);
     }
 
     @Override
