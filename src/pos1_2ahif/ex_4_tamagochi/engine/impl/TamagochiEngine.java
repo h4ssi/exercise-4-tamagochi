@@ -2,11 +2,14 @@ package pos1_2ahif.ex_4_tamagochi.engine.impl;
 
 import pos1_2ahif.ex_4_tamagochi.engine.api.Engine;
 import pos1_2ahif.ex_4_tamagochi.engine.api.FrameFactory;
+import pos1_2ahif.ex_4_tamagochi.engine.api.TamagochiLogic;
 import pos1_2ahif.ex_4_tamagochi.engine.exception.InitializationException;
 
+import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -16,6 +19,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
+import java.util.Calendar;
 
 /**
  * Created by Florian on 18.11.2014.
@@ -26,13 +30,18 @@ public class TamagochiEngine implements Engine {
     private JComponent status;
     private LogPanel logEntries;
     private JComponent textField;
+
     private char foregroundColorCode;
     private char backgroundColorCode;
-    int graphicsWidth = 16;
-    int graphicsHeight = 8;
-    int statusWidth = 16;
-    int logWidth = 80 - graphicsWidth - statusWidth;
-    int height = 20;
+
+    private int graphicsWidth = 16;
+    private int graphicsHeight = 8;
+    private int statusWidth = 16;
+    private int logWidth = 80 - graphicsWidth - statusWidth;
+    private int height = 20;
+
+    private TamagochiLogic logic = null;
+    private Timer timer = new Timer(0, null);
 
     public TamagochiEngine(final char foregroundColorCode, final char backgroundColorCode) throws InitializationException {
         try {
@@ -47,7 +56,7 @@ public class TamagochiEngine implements Engine {
                     frame.addWindowListener(new WindowAdapter() {
                         @Override
                         public void windowClosing(WindowEvent e) {
-                            System.out.println("closing...");
+                            onExit();
                         }
 
                         @Override
@@ -93,14 +102,53 @@ public class TamagochiEngine implements Engine {
 
                     frame.pack();
                     frame.setResizable(false);
-
-                    frame.setVisible(true);
                 }
             });
         } catch (InterruptedException e) {
             throw new InitializationException("Engine was interrupted during initialization: " + e.getMessage(), e);
         } catch (InvocationTargetException e) {
             throw new InitializationException("Engine threw exception during initialization: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public synchronized void start(final TamagochiLogic logic) {
+        unloadLogic();
+
+        this.logic = logic;
+
+        this.logic.init();
+
+        frame.setVisible(true);
+
+        timer.setInitialDelay(0);
+        timer.setDelay(1000);
+
+        final TamagochiLogic logicClosure = logic;
+        timer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                logicClosure.update(Calendar.getInstance());
+            }
+        });
+
+        timer.start();
+    }
+
+    private synchronized void onExit() {
+        unloadLogic();
+    }
+
+    private void unloadLogic() {
+        if(this.logic != null) {
+            logic.exit();
+            timer.setInitialDelay(10000);
+            timer.restart();
+            timer.stop();
+            for (ActionListener l : timer.getActionListeners()) {
+                timer.removeActionListener(l);
+            }
+            this.logic = null;
         }
     }
 

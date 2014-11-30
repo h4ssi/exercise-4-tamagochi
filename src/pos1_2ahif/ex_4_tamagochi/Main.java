@@ -17,42 +17,6 @@ public class Main {
                 foregroundColorCode,
                 backgroundColorCode);
 
-        engine.render(
-                engine.createGraphicsFrame().fromStrings(
-                        // symbols
-                        "                " +
-                                "   draw your    " +
-                                "   tamagochi    " +
-                                "      here      " +
-                                "                " +
-                                "   eg a fish:   " +
-                                "~~°°~~~~~~~~~~~~" +
-                                "~~°<*)))u))>{~~~",
-                        // foreground colors
-                        "                " +
-                                "eeeeeeeeeeeeeeee" +
-                                "eeeeeeeeeeeeeeee" +
-                                "eeeeeeeeeeeeeeee" +
-                                "                " +
-                                "eeeeeeeeeeeeeeee" +
-                                "OpOpoOpOpoOOpoOp" +
-                                "popAaAAAaAAaaoOp",
-                        // background colors
-                        "7777777777777777" +
-                                "7777777777777777" +
-                                "7777777777777777" +
-                                "7777777777777777" +
-                                "7777777777777777" +
-                                "7777777777777777" +
-                                "oooooooooooooooo" +
-                                "oooooooooooooooo"));
-
-        engine.status(
-                engine.createStatusFrame().fromSegments(new FrameSegment("asdf")));
-
-        engine.log(
-                engine.createLogFrame().fromSegments(new FrameSegment("Log entry #1")));
-        engine.log(
-                engine.createLogFrame().fromSegments(new FrameSegment("Log entry #2")));
+        engine.start(new MyTamagochiLogic(engine));
     }
 }

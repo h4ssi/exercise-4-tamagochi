@@ -45,6 +45,7 @@ public class LogPanel extends JScrollPane {
     public void add(Frame frameToAppend) {
         logFrame = frameToAppend.nextFrame(logFrame);
         CacaCanvas.renderCacaFrame.invoke(logCanvas, logFrame);
+        logCanvas.revalidate();
         logCanvas.scrollRectToVisible(new Rectangle(0, logCanvas.getPreferredSize().height, 0, 0));
     }
 }
