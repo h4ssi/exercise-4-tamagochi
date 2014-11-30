@@ -4,6 +4,8 @@ import pos1_2ahif.ex_4_tamagochi.engine.exception.InitializationException;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
@@ -15,6 +17,7 @@ import java.text.MessageFormat;
 public class Engine {
     private JFrame frame;
     private JComponent view;
+    private JComponent textField;
     private char foregroundColorCode;
     private char backgroundColorCode;
     int width = 16;
@@ -46,11 +49,32 @@ public class Engine {
 
                     view = createCacaCanvas(width, height);
                     frame.add(view, BorderLayout.LINE_START);
-                    LogPanel p = new LogPanel(80 - width, height);
-                    for (int i = 0; i < 10; i++) {
-                        p.add("test");
-                    }
+                    LogPanel p = new LogPanel(80 - width, height, foregroundColorCode, backgroundColorCode);
+
                     frame.add(p, BorderLayout.CENTER);
+
+                    textField = CacaCanvas.textField(80, foregroundColorCode, backgroundColorCode,
+                            new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent actionEvent) {
+
+                                }
+                            },
+                            new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent actionEvent) {
+                                    // on enter:
+                                    String command = (String) CacaCanvas.currentText.invoke(textField);
+                                    if(command == null || command.isEmpty()) {
+                                        return;
+                                    }
+
+                                    System.out.println(command);
+                                    CacaCanvas.currentText.invoke(textField, "");
+                                }
+                            });
+
+                    frame.add(textField, BorderLayout.PAGE_END);
 
                     frame.pack();
                     frame.setResizable(false);

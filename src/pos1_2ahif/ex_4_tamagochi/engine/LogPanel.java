@@ -4,6 +4,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 
@@ -16,12 +17,14 @@ public class LogPanel extends JScrollPane {
     private Object logFrame;
     private final JComponent logCanvas;
 
-    public LogPanel(int width, int height) {
-        this(CacaCanvas.emptyCanvas(width, height, ' ', ' '), width, height);
+    public LogPanel(int width, int height, char foreGroundColorCode, char backGroundColorCode) {
+        this(CacaCanvas.emptyCanvas(width, height, foreGroundColorCode, backGroundColorCode), width, height, foreGroundColorCode, backGroundColorCode);
     }
 
-    private LogPanel(JComponent canvas, int width, int height) {
+    private LogPanel(JComponent canvas, int width, int height, char foreGroundColorCode, char backGroundColorCode) {
         super(canvas, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
+
+        this.getViewport().setBackground((Color) CacaCanvas.getColorForChar.invoke(backGroundColorCode));
 
         this.logCanvas = canvas;
         preferredSize = logCanvas.getPreferredSize();
@@ -31,7 +34,8 @@ public class LogPanel extends JScrollPane {
         this.setBorder(BorderFactory.createEmptyBorder());
 
         // get size for scroll pane
-        this.logFrame = CacaCanvas.frameFromString.invoke(width, "", "", "", ' ', 'a', ' ');
+        this.logFrame = CacaCanvas.frameFromString.invoke(width, "", "", "", ' ', foreGroundColorCode, backGroundColorCode);
+        CacaCanvas.renderCacaFrame.invoke(logCanvas, logFrame);
     }
 
     @Override
