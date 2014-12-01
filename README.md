@@ -4,7 +4,7 @@ Exercise 4 "Tamagochi"
 Task -1: Build and run the project yourself
 -------------------------------------------
 
-1. [Download a copy](https://github.com/pos1-2ahif/exercise-4-tamagochi/archive/master.zip)
+1. [Download a copy](https://github.com/H4ssi/exercise-4-tamagochi/archive/master.zip)
 2. Run gradle (it will create a [eclipse project](http://eclipse.org/) for you)
    * on Windows just double-click `gradlew.bat` 
    * on Linux or MacOS run `./gradlew` 
@@ -74,6 +74,8 @@ Sehen Sie? @ sind die Blätter, H ist der Stamm und " ist ein bisschen Gras daru
 
 Mit ein bisschen Farbe wird das noch überzeugender, schauen Sie sich diese Palette an:
 
+![palette](https://raw.github.com/H4ssi/exercise-4-tamagochi/res/caca-palette.png)
+
 Wir machen damit die Baumkrone grün, den Stamm braun und das Gras grün, dafür verwenden wir so einen String
 
 ```
@@ -97,6 +99,8 @@ DDDD
 ```
 
 Damit bekommen wir so ein Bild:
+
+![palette](https://raw.github.com/H4ssi/exercise-4-tamagochi/res/baum.png)
 
 Der vollständige JavaCode schaut dann so aus
 
@@ -155,7 +159,7 @@ Wir wollen dabei den ersten Teil rot und grün haben, den zweiten Teil nur blau.
 
 Damit bekämen wir folgenden Text (die Farben werden immer wieder wiederholt):
 
-
+![palette](https://raw.github.com/H4ssi/exercise-4-tamagochi/res/text.png)
 
 In Java schaut das so aus:
 
@@ -180,13 +184,15 @@ Das können Sie wieder in die `init` Methode kopieren, um das auszuprobieren.
 
 Überlegen Sie sich ein Tier und machen Sie davon ein Bild und zeigen dieses an.
 
+Für Ihr Bild haben Sie 16 Zeichen in der Breite und 8 Zeichen in der Höhe zur Verfügung.
+
 ### Task 2: Macht Sachen
 
 Überlegen Sie sich, was ihr Tier regelmäßig so macht. Lassen Sie Ihr Tier alle 10 Sekunden eine gewisse Tätigkeit machen und merken Sie sich wie oft ihr Tier das schon gemacht hat!
 
 Geben Sie im Log aus, wenn so eine Tätigkeit gerade passiert (z.B. "Grunz!")
 
-Zeigen Sie die Anzahl im Status an
+Zeigen Sie die Anzahl im Status an. Für den Status haben Sie 16 Zeichen in der Breite zur Verfügung.
 
 ### Task 3: Gehorcht aufs Wort
 
