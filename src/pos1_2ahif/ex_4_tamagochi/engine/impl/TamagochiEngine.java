@@ -20,15 +20,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
@@ -269,6 +266,19 @@ public class TamagochiEngine implements Engine {
         unloadLogic();
     }
 
+    private static void writeString(FileOutputStream fos, String s) throws IOException {
+        s = s + "\n";
+        fos.write(s.getBytes("UTF-8"));
+    }
+
+    private static String readString(FileInputStream fis) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        for (int c = fis.read(); c != -1 && c != '\n'; c = fis.read()) {
+            baos.write(c);
+        }
+        return baos.toString("UTF-8");
+    }
+
     private static File getFile(TamagochiLogic logic) {
         return new File("tamagochi." + logic.getClass().getSimpleName() + ".txt");
     }
@@ -296,11 +306,11 @@ public class TamagochiEngine implements Engine {
             final FileInputStream fis = new FileInputStream(file);
             try {
                 System.out.println("loading from file " + file.getAbsolutePath() + "...");
-                BufferedReader br = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
 
-                name = br.readLine();
-                String bday = br.readLine();
-                String last = br.readLine();
+                name = readString(fis);
+                String bday = readString(fis);
+                String last = readString(fis);
+
 
                 birthday = Calendar.getInstance();
                 birthday.setTime(TIME_FORMAT.parse(bday));
@@ -359,10 +369,9 @@ public class TamagochiEngine implements Engine {
                     FileOutputStream fos = new FileOutputStream(file);
                     try {
                         System.out.println("saving to file " + file.getAbsolutePath() + "...");
-                        PrintWriter pw = new PrintWriter(new OutputStreamWriter(fos, "UTF-8"), true);
-                        pw.println(name);
-                        pw.println(TIME_FORMAT.format(birthday.getTime()));
-                        pw.println(TIME_FORMAT.format(Calendar.getInstance().getTime()));
+                        writeString(fos, name);
+                        writeString(fos, TIME_FORMAT.format(birthday.getTime()));
+                        writeString(fos, TIME_FORMAT.format(Calendar.getInstance().getTime()));
 
                         logic.store(fos);
                     } finally {
