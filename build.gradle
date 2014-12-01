@@ -17,11 +17,10 @@ sourceSets {
 
 repositories {
     mavenCentral()
-    mavenLocal()
     maven { url "https://clojars.org/repo" }
 }
 
 dependencies {
-    compile group: 'h4ssi', name: 'cacacanvas', version: '0.2.0-SNAPSHOT'
+    compile group: 'h4ssi', name: 'cacacanvas', version: '0.2.0'
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
